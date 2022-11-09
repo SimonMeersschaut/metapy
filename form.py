@@ -281,7 +281,7 @@ if __name__ == '__main__':
   window.option_add( "*font", "lucida 12" )
   # window.maxsize(width=700, height=800)
   window.minsize(width=550, height=500)
-  window.geometry('920x800')
+  window.geometry('1000x800')
   
   window.title('Form')
   # window.maxsize(500, 500)
