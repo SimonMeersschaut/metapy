@@ -1,6 +1,6 @@
 import tkinter
 from tkinter import ttk, messagebox
-from tkcalendar import Calendar
+#from tkcalendar import Calendar
 import converter # self-written module, included in this dir
 import upload # self-written script, included in this dir
 import json
@@ -10,10 +10,8 @@ import requests
 import snapshot
 
 # HIDE CMD
-import win32gui, win32con
-the_program_to_hide = win32gui.GetForegroundWindow()
-#
-win32gui.ShowWindow(the_program_to_hide , win32con.SW_HIDE)
+import ctypes
+ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 0 )
 
 row = 0
 
@@ -23,7 +21,7 @@ row = 0
 ENTRY_BUTTONS = {
   'Date':{'text':'now', 'on_click':lambda: datetime.now().strftime('%Y.%m.%d')},
   'Time':{'text':'now', 'on_click':lambda: datetime.now().strftime('%H:%M')},
-  'Activity':{'text':'fetch', 'on_click':lambda: fetch('https://mill.capitan.imec.be/api/any/motrona_sf6')['counter_0_value']}
+  'SF6_pressure':{'text':'fetch', 'on_click':lambda: fetch('https://mill.capitan.imec.be/api/any/motrona_sf6')['counter_0_value']}
 }
 
 def fetch(url):
