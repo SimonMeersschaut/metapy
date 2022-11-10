@@ -7,6 +7,7 @@ import json
 from datetime import datetime
 import sys
 import requests
+import snapshot
 
 # HIDE CMD
 import win32gui, win32con
@@ -22,14 +23,14 @@ row = 0
 ENTRY_BUTTONS = {
   'Date':{'text':'now', 'on_click':lambda: datetime.now().strftime('%Y.%m.%d')},
   'Time':{'text':'now', 'on_click':lambda: datetime.now().strftime('%H:%M')},
-  'Activity':{'text':'fetch', 'on_click':lambda: fetch('http://127.0.0.1:5000/')}
+  'Activity':{'text':'fetch', 'on_click':lambda: fetch('https://mill.capitan.imec.be/api/any/motrona_sf6')['counter_0_value']}
 }
 
 def fetch(url):
   try:
     print('fetching...')
     r = requests.get(url)
-    return r.text
+    return json.loads(r.text)
   except Exception as e:
     if type(e) == requests.exceptions.ConnectionError:
       messagebox.showwarning(title='An error accured while fetching the data.', message='ConnectionError: ' + str(type(e)) + ' while fetching data. ') #TODO custom message
@@ -246,6 +247,8 @@ def save():
 
   if success:
     messagebox.showinfo(title='Uploading file', message=message)
+    snapshot.create_snaptshot()
+    #TODO new msg
   else:
     messagebox.showwarning(title='Error while uploading metadata', message=message+'\nThe data is not saved.')
   
