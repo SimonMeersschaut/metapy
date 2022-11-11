@@ -9,9 +9,6 @@ import sys
 import requests
 import snapshot
 
-# HIDE CMD
-import ctypes
-ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 0 )
 
 row = 0
 
@@ -21,7 +18,8 @@ row = 0
 ENTRY_BUTTONS = {
   'Date':{'text':'now', 'on_click':lambda: datetime.now().strftime('%Y.%m.%d')},
   'Time':{'text':'now', 'on_click':lambda: datetime.now().strftime('%H:%M')},
-  'SF6_pressure':{'text':'fetch', 'on_click':lambda: fetch('https://mill.capitan.imec.be/api/any/motrona_sf6')['counter_0_value']}
+  'SF6_pressure[bar]':{'text':'fetch', 'on_click':lambda: fetch('https://mill.capitan.imec.be/api/any/motrona_sf6')['counter_0_value']},
+  'SF6_temperature[C]': {'text':'fetch', 'on_click':lambda: fetch('https://mill.capitan.imec.be/api/any/motrona_sf6')['counter_1_value']}
 }
 
 def fetch(url):
@@ -270,70 +268,88 @@ ENTRY_TYPES = [
   TextEntry
 ]
 
+
 if __name__ == '__main__':
+  # HIDE CMD
+  import ctypes
+  ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 0 )
   try:
-    TEMPLATE_FILE = sys.argv[1]
-  except IndexError:
-    print('No template file given')
-    input('[ENTER] to exit')
-    exit()
-  # Create the tkinter window
-  window = tkinter.Tk()
-  window.option_add( "*font", "lucida 12" )
-  # window.maxsize(width=700, height=800)
-  window.minsize(width=550, height=500)
-  window.geometry('1000x800')
-  
-  window.title('Form')
-  # window.maxsize(500, 500)
 
-  # Create scrollbar
-  my_canvas = tkinter.Canvas(window)
-  my_canvas.pack(side=tkinter.LEFT, fill=tkinter.BOTH, expand=1)
+    try:
+      TEMPLATE_FILE = sys.argv[1]
+    except IndexError:
+      print('No template file given')
+      input('[ENTER] to exit')
+      exit()
+    # Create the tkinter window
+    window = tkinter.Tk()
+    window.option_add( "*font", "lucida 12" )
+    # window.maxsize(width=700, height=800)
+    window.minsize(width=550, height=500)
+    window.geometry('1000x800')
+    
+    window.title('Form')
+    # window.maxsize(500, 500)
 
-  scrollbar = tkinter.ttk.Scrollbar(window, orient=tkinter.VERTICAL, command=my_canvas.yview)
-  scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+    # Create scrollbar
+    my_canvas = tkinter.Canvas(window)
+    my_canvas.pack(side=tkinter.LEFT, fill=tkinter.BOTH, expand=1)
 
-  my_canvas.configure(yscrollcommand=scrollbar.set)
-  my_canvas.bind('<Configure>', lambda e:my_canvas.configure(scrollregion= my_canvas.bbox('all')))
+    scrollbar = tkinter.ttk.Scrollbar(window, orient=tkinter.VERTICAL, command=my_canvas.yview)
+    scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 
-  second_frame = tkinter.Frame(my_canvas)
-  second_frame.config(highlightthickness=0)
+    my_canvas.configure(yscrollcommand=scrollbar.set)
+    my_canvas.bind('<Configure>', lambda e:my_canvas.configure(scrollregion= my_canvas.bbox('all')))
 
-  my_canvas.create_window((0,0), window=second_frame, anchor='nw')
+    second_frame = tkinter.Frame(my_canvas)
+    second_frame.config(highlightthickness=0)
 
-  # Load template file
-  try:
-    with open(TEMPLATE_FILE, 'r') as f:
-      content = f.read()
-      data = json.loads(converter.meta_to_json(content))
-      template_format = converter.load_format(content)
-  except:
-    print(f'No `{TEMPLATE_FILE}´-file found in current working directory.')
-    input('[ENTER] to exit')
+    my_canvas.create_window((0,0), window=second_frame, anchor='nw')
+
+    # Load template file
+    try:
+      with open(TEMPLATE_FILE, 'r') as f:
+        content = f.read()
+        data = json.loads(converter.meta_to_json(content))
+        template_format = converter.load_format(content)
+    except:
+      print(f'No `{TEMPLATE_FILE}´-file found in current working directory.')
+      input('[ENTER] to exit')
 
 
-  entries = []
-  for template_item in template_format:
-    print(template_item)
-    print(converter.decoder.EmptyLine)
-    if type(template_item) == tuple:
-      key, value = template_item
-      # find type of value
-      entry = create_entry(key, value)
+    entries = []
+    for template_item in template_format:
+      print(template_item)
+      print(converter.decoder.EmptyLine)
+      if type(template_item) == tuple:
+        key, value = template_item
+        # find type of value
+        entry = create_entry(key, value)
 
-      entry.set_value(value) # set the entry value to the one on the template file
-      entries.append(entry)
+        entry.set_value(value) # set the entry value to the one on the template file
+        entries.append(entry)
 
-    elif template_item == converter.decoder.EmptyLine:
-      entries.append(
-        HorizantalSeperator(second_frame)
-      )
+      elif template_item == converter.decoder.EmptyLine:
+        entries.append(
+          HorizantalSeperator(second_frame)
+        )
+      row += 1
+
+
     row += 1
+    button = tkinter.Button(window, text='save', width=8, command=save)
+    button.pack()
 
-
-  row += 1
-  button = tkinter.Button(window, text='save', width=8, command=save)
-  button.pack()
-
-  window.mainloop()
+    window.mainloop()
+    import ctypes
+    ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 1 )
+    # exit()
+  except Exception as e:
+    import ctypes
+    ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 1 )
+    print('! Unexpected error:')
+    print(e)
+    input('Press <ENTER> to continue')
+    
+  
+    
