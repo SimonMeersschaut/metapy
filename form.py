@@ -186,7 +186,6 @@ class HorizantalSeperator:
   def __init__(self, window):
     global row
     row += 1
-    print('SEPERATOR')
     self.separator2 = tkinter.Frame(window, bd=10, relief='sunken', height=10)
     self.separator2.grid(row=row, column=1)
     row += 1
@@ -254,11 +253,23 @@ def create_entry(key, value) -> Entry:
       # create the entry
       # check if there is a button registered for this entry
       if key in list(ENTRY_BUTTONS.keys()):
-        print(key)
         return entry_type(second_frame, key, button=ENTRY_BUTTONS[key])
       else:
         return entry_type(second_frame, key)
 
+def check_keywords(template_format, keywords_filename:str) -> bool:
+  """Check if all keys in the template_format are alos in the keywords_file."""
+  with open(keywords_filename, 'r') as f:
+    content = f.read()
+    data = json.loads(converter.meta_to_json(content))
+    allowed_keywords_format = converter.load_format(content)
+  
+  for item in template_format:
+    if type(item) == tuple: # (key, value)
+      if not(item) in allowed_keywords_format:
+        print(f'[ERROR]: key "{item[0]}" was not found in the keywords_file "{keywords_filename}".')
+        return False
+  return True
 
 ENTRY_TYPES = [
   DateEntry,
@@ -276,11 +287,27 @@ if __name__ == '__main__':
   try:
 
     try:
-      TEMPLATE_FILE = sys.argv[1]
+      ALLOWEDKEYWORDS = sys.argv[1]
+      TEMPLATE_FILE = sys.argv[2]
     except IndexError:
-      print('No template file given')
+      raise Exception('No allowedkeywords and/or template file given.')
+    # Load template file
+    try:
+      with open(TEMPLATE_FILE, 'r') as f:
+        content = f.read()
+        data = json.loads(converter.meta_to_json(content))
+        template_format = converter.load_format(content)
+    except FileNotFoundError:
+      print(f'No `{TEMPLATE_FILE}´-file found in current working directory.')
       input('[ENTER] to exit')
-      exit()
+    
+    # check keywords of template file with the allowedkeywords.meta - file
+    if check_keywords(template_format, ALLOWEDKEYWORDS):
+      ## SUCCESS
+      pass
+    else:
+      raise Exception('template file does not match allowed keywords file.')
+
     # Create the tkinter window
     window = tkinter.Tk()
     window.option_add( "*font", "lucida 12" )
@@ -306,21 +333,10 @@ if __name__ == '__main__':
 
     my_canvas.create_window((0,0), window=second_frame, anchor='nw')
 
-    # Load template file
-    try:
-      with open(TEMPLATE_FILE, 'r') as f:
-        content = f.read()
-        data = json.loads(converter.meta_to_json(content))
-        template_format = converter.load_format(content)
-    except:
-      print(f'No `{TEMPLATE_FILE}´-file found in current working directory.')
-      input('[ENTER] to exit')
 
 
     entries = []
     for template_item in template_format:
-      print(template_item)
-      print(converter.decoder.EmptyLine)
       if type(template_item) == tuple:
         key, value = template_item
         # find type of value
@@ -347,9 +363,9 @@ if __name__ == '__main__':
   except Exception as e:
     import ctypes
     ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 1 )
-    print('! Unexpected error:')
-    print(e)
-    input('Press <ENTER> to continue')
+    print('[ERROR]: Unexpected error:')
+    print('[ERROR]: '+str(e))
+    input('[ERROR]: Press <ENTER> to continue')
     
   
     

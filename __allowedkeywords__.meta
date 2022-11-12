@@ -1,0 +1,36 @@
+ *
+ * Date                    := 2022.08.08
+ * Time                    := 11:11
+ * Activity                := One-line description of what needs to be logged
+ * Spectrum_ID             := ERDcc22_023 or other
+ *
+ * Primary-beam            := 35Cl4+, 63Cu4+, ...
+ * Energy[MeV]             := 8.0
+ * T1_MCP[V]               := +2754
+ * T2_MCP[V]               := -2100
+ * Energ-det               := GIC or PIPS
+ * Energ-det-ser-nr        := in case of pips serial number, otherwise n.a.
+ * Energ-det-current[nA]   := in case of pips - leakage current in nA, otherwise n.a.
+ * 
+ * Sample_ID               := PEALD 75C D02
+ * Sample_piece            := #1, use ? if not known
+ * Spec_H_min[%]           := 8.5
+ * Spec_H_max[%]           := 11.6
+ * Spec_O_min[%]           := 60.0
+ * Spec_O_max[%]           := 69.0
+ * Hide-in-plot            := False
+ * 
+ * Sample Tilt[Degr]       := 15.0
+ * Slab_min                := 111
+ * Slab_max                := 846
+ * 
+ * Measd-Conc_H[%]         := 8.83
+ * Measd-Conc_C[%]         := 0.12
+ * Measd-Conc_N[%]         := 0
+ * Measd-Conc_O[%]         := 63.42
+ * Measd-Conc_Si[%]        := 27.63
+ *
+ * Note001                 := 16O + 18O considered as total O. Z steps =8.  Measured with GIC.  
+ * Note002                 := Measuremnt time is 3600 seconds. After this measurment, PHA LLD optimized to 209 mV.
+ * Note003                 := count rate from T2 MCP was 1000 counts/s even without a beam
+ *
