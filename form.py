@@ -244,11 +244,13 @@ def check_keywords(template_format, keywords_filename:str) -> bool:
     content = f.read()
     data = json.loads(converter.meta_to_json(content))
     allowed_keywords_format = converter.load_format(content)
-  
   for item in template_format:
     if type(item) == tuple: # (key, value)
-      if not(item) in allowed_keywords_format:
-        print(f'[ERROR]: key "{item[0]}" was not found in the keywords_file "{keywords_filename}".')
+      template_key = item[0]
+      #print(item)
+      #print(allowed_keywords_format)
+      if not(template_key in [item[0] for item in allowed_keywords_format if type(item) == tuple]):
+        print(f'[ERROR]: key "{template_key}" was not found in the keywords_file "{keywords_filename}".')
         return False
   return True
 
@@ -270,6 +272,7 @@ if __name__ == '__main__':
     try:
       ALLOWEDKEYWORDS = sys.argv[1]
       TEMPLATE_FILE = sys.argv[2]
+      print(ALLOWEDKEYWORDS, TEMPLATE_FILE)
     except IndexError:
       raise Exception('No allowedkeywords and/or template file given.')
     # Load template file
