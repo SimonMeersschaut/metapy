@@ -1,19 +1,59 @@
-# metapy
-## Introduction
-"metapy" is an application that helps the user to manage user-initated data-logging. The GUI is a tkinter input based on the template meta-file. The main  functionality of the application is to store a collection of key-value pairs. The result is uploaded to a child folder. 
+# Metapy
+Metapy is an application that helps the user to manage user-initated data-logging. 
+## Converter
+metapy contains a library called 'converter' which is used to convert .meta file to JSON and vice versa.
+The functions of converter are:
+ * meta_to_json: input meta (a string [the content of a meta file]), returs: a json_string (a string that looks like a dictionary, but is kept as a string to keep the format of the original meta file
+ PLEASE NOTE that if you want to convert metadata to a python-dict, you will also need something to interprate the json-dict (like the python json-module). 
+  * json_to_meta: input string (a string that contains a dictionary [like the output of meta_to_json]), returns: a string (the corresponding meta-data)
+  * load_format: used to extract the format of a meta file. Can return:
+      - (key, value)
+      - WaitForStar = auto()
+      - WaitForFirstLetterOfKey = auto()
+      - SavingKey = auto()
+      - WaitForFirstLetterOfValue = auto()
+      - SavingValue = auto()
 
-The used format is the so-called meta-format.  It is designed to be easily readable by humans as well as computers. For humans, you can just open the file in Notepad for example and the data whill be very easy to read. For computers, however, we created the Metapy software: a way to convert meta-data into dictionaries.
 
-You can store multiple template files in the parent directory, to cover a variety of data-sets that you want to store. Creating these template files, could be done with a ASCII text editor, such as Notepad. An example meta-file is added below.
+## Form
+The form is a GUI to enter logging data. Can be runned using:
 
-The application is designed to be used to record parameters of a set-up that varies over time, and for which the logging is initiated by the user (for example in the GUI). 
+      python form.py <allowed_keywords> <template_file>
 
-## Use cases
-One of the use-cases is to analyze the trend of a specific value over time. For this, it is advised to always have date/time values inside the meta-file. But, the use is not limited to the analysis of data as a function of time. One can analyze the correlation between any two parameters in the file, or select files with a specific key-value pair etc., just as you would do with a collection of json files.
+When clicking Save, the script will run upload.py to upload all the data in the form.
 
-Another use-case is to consult the settings as a whole on a specific moment in the past. For this, it is a good practice to also include a short note which describes the context of the logging: for example "Good functional set-up after maintenance", or "Performance of the set-up after installation of new detector" etc. This will help you later to give meaning to the values and trends.
+Arguments:
+ * allowed keywords: a path to a .meta file. The script will check if every key in the template file is also in the allowed_keywords-file. If not, an error will be raised.
+ * template file: The layout of the form will be based on this file: the same keys will be used, the default values of the form will be those in the template file. And, when clicking save, the program will check if a value corresponds with the value on the template file (if the value on the template file is an integer, the value in the form should be too). If these values do not correspond (most probably because of a typo), an error will be raise.
+## Buttons.py
+ The <buttons.py> script is a part of the Form, and is used to program update-buttons in the GUI. To add a new button, use the following format:
 
-## Example of a Meta-file
+      {
+            the key in the template file (where in the form to place the button): {
+                  "text": the text to display on the button (fetch/now...),
+                  "on_click": the function to run when the button is click. The value that the function returns, will be used as the value of the entry. (Tip: use lambda to define your functions)
+            }
+      }
+
+      'text':the text to be displayed on the button
+      
+
+## Snapshot
+This script will go in each directory (excluding those with '__' in their name) and take the last datafile (.meta). It will combine those files in a .dat file. This can be used to send the current status to another program.
+
+## File To JSON
+Run this script with a meta file as an argument, and it will convert it into a JSON file (using the Converter library).
+
+## Upload.py
+A script that will first check a few requirements, and then upload the data to a datafiles-directory.
+The requirements are:
+ * The data may not already be uploaded in the directory.
+
+## The meta format
+
+The meta-format is a key-value based format, designed to be easily readable by humans as well as computers. For users, you can just open the file in Notepad for example and the data whill be easy to read. For computers, however, we created the Converter library to convert meta-file to json
+
+An example of this format:
 
       *
       * Date                    := 2022.08.08
@@ -48,6 +88,6 @@ Another use-case is to consult the settings as a whole on a specific moment in t
       * Measd-Conc_Si[%]        := 27.63
       *
       * Note001                 := 16O + 18O considered as total O. Z steps =8.  Measured with GIC.  
-      * Note002                 := Measuremnt time is 3600 seconds. After this measurment, PHA LLD optimized to 209 mV.
+      * Note002                 := Measuremnt time is 3600 seconds. After this measurment, PHA LLD    optimized to 209 mV.
       * Note003                 := count rate from T2 MCP was 1000 counts/s even without a beam
       *
