@@ -34,8 +34,6 @@ Arguments:
                   "on_click": the function to run when the button is click. The value that the function returns, will be used as the value of the entry. (Tip: use lambda to define your functions)
             }
       }
-
-      'text':the text to be displayed on the button
       
 
 ## Snapshot
