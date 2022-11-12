@@ -6,13 +6,9 @@ The functions of converter are:
  * meta_to_json: input meta (a string [the content of a meta file]), returs: a json_string (a string that looks like a dictionary, but is kept as a string to keep the format of the original meta file
  PLEASE NOTE that if you want to convert metadata to a python-dict, you will also need something to interprate the json-dict (like the python json-module). 
   * json_to_meta: input string (a string that contains a dictionary [like the output of meta_to_json]), returns: a string (the corresponding meta-data)
-  * load_format: used to extract the format of a meta file. Can return:
+  * load_format: used to extract the format of a meta file. Returns a list of:
       - (key, value)
-      - WaitForStar = auto()
-      - WaitForFirstLetterOfKey = auto()
-      - SavingKey = auto()
-      - WaitForFirstLetterOfValue = auto()
-      - SavingValue = auto()
+      - decoder.EmptyLine
 
 
 ## Form
