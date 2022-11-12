@@ -23,7 +23,7 @@ def create_snaptshot():
     
     snapshot += '}'
     
-    with open('\\\\winbe.imec.be/wasp/meta/test.dat', 'w+') as f:
+    with open('\\\\winbe.imec.be/wasp/meta/snapshot.json', 'w+') as f:
         f.write(snapshot)
 
 if __name__ == '__main__':
