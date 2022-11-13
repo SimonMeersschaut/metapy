@@ -18,7 +18,7 @@ def create_snaptshot(max_date:str):
         filtered = []
         for metafile in metafiles:
             try:
-                if datetime.datetime.strptime(metafile.split('.meta')[0].split('datafiles\\')[-1][:-1], '%Y.%m.%d') < max_moment:
+                if datetime.datetime.strptime(metafile.split('.meta')[0].split('datafiles\\')[-1][:-1], '%Y.%m.%d_%H.%M') <= max_moment:
                     filtered.append(metafile)
             except:
                 print(f'[ALERT] "{metafile}" does not match file format. This file will be skipped.')
