@@ -73,7 +73,7 @@ class TextEntry(Entry):
   
   def focus_out(self, event):
     # print(self.validate_input())
-    print(type(self))
+    # print(type(self))
     if not(self.validate_input()):
       self.entry.config(highlightbackground='red')
       self.entry.config(highlightthickness=2)
@@ -173,7 +173,7 @@ class HorizantalSeperator:
 def search_entry(name) -> object:
   for entry in entries:
     if type(entry) == HorizantalSeperator:
-      print(name)
+      # print(name)
       continue
     if entry.name == name:
       return entry
@@ -211,7 +211,7 @@ def save():
     else:
       pass # skip empty lines
   
-  print(data)
+  # print(data)
   success, message = upload.upload_meta(
     # the upload function requires metadata, so we first need to convert the JSON data
     converter.json_to_meta(
