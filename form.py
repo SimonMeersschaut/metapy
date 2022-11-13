@@ -7,7 +7,6 @@ import json
 from datetime import datetime
 import sys
 import requests
-import snapshot
 from  buttons import ENTRY_BUTTONS
 
 row = 0
@@ -223,7 +222,7 @@ def save():
 
   if success:
     messagebox.showinfo(title='Uploading file', message=message)
-    snapshot.create_snaptshot()
+    
     #TODO new msg
   else:
     messagebox.showwarning(title='Error while uploading metadata', message=message+'\nThe data is not saved.')

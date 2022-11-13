@@ -5,6 +5,7 @@ from datetime import datetime
 import string
 import os
 import sys
+import snapshot
 
 def upload_meta(metadata:str):
   # First convert it to a dictionary to perform a check
@@ -19,6 +20,7 @@ def upload_meta(metadata:str):
     # => UPLOAD
     with open(f"datafiles/{generate_filename(json_data['Date'], json_data['Time'])}", 'w+') as f:
       f.write(metadata)
+    snapshot.create_snaptshot()
     return (True, 'successfully uploaded the file')
 
 def file_already_uploaded(json_data:dict) -> (bool, str):

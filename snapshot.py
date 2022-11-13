@@ -5,8 +5,13 @@ import json
 import argparse
 import datetime
 
-def create_snaptshot(max_date:str):
-    max_moment = datetime.datetime.strptime(max_date, '%Y.%m.%d')
+def create_snaptshot(max_date:str = None):
+    if max_date == None:
+        now = datetime.datetime.now()
+        # print(now.strftime('%Y.%M.%D'))
+        max_date= now # now.strftime('%Y.%m.%d')
+    else:
+        max_moment = datetime.datetime.strptime(max_date, '%Y.%m.%d')
     snapshot = '{'
 
     folders = glob.glob('../*')
@@ -51,9 +56,7 @@ def main():
     if args.date: # is given
         create_snaptshot(max_date=args.date)
     else:
-        now = datetime.datetime.now()
-        print(now.strftime('%Y.%M.%D'))
-        create_snaptshot(max_date= now.strftime('%Y.%m.%d'))
+        create_snaptshot()
     
     print('[SUCCESS] created a snapshot')
 
