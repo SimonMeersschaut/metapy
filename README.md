@@ -34,6 +34,7 @@ Arguments:
 
 ## Snapshot
 This script will go in each directory (excluding those with '__' in their name) and take the last datafile (.meta). It will combine those files in a .dat file. This can be used to send the current status to another program.
+You can run the script with a end-date as an argument to get the status at that moment ( the file that was uploaded the latest at this moment ).
 
 ## File To JSON
 Run this script with a meta file as an argument, and it will convert it into a JSON file (using the Converter library).
