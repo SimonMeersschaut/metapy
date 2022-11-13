@@ -217,7 +217,8 @@ def save():
     converter.json_to_meta(
       data,
       template=template_format # the template argument is used to keep the right format
-      ) 
+      ),
+      allowed_keywords_filename=ALLOWEDKEYWORDS
   )
 
   if success:
