@@ -8,8 +8,10 @@ import datetime
 def create_snaptshot(max_date:str = None):
     if max_date == None:
         now = datetime.datetime.now()
-        # print(now.strftime('%Y.%M.%D'))
-        max_date= now # now.strftime('%Y.%m.%d')
+        max_date= now.strftime('%Y.%m.%d')
+        max_moment = datetime.datetime.strptime(max_date, '%Y.%m.%d') 
+        # used to make the <now> less accurate
+        # -> so the files that have been written a few seconds ago also get included
     else:
         max_moment = datetime.datetime.strptime(max_date, '%Y.%m.%d')
     snapshot = '{'
@@ -29,9 +31,9 @@ def create_snaptshot(max_date:str = None):
                 print(f'[ALERT] "{metafile}" does not match file format. This file will be skipped.')
         if len(filtered) == 0:
             if len(metafiles) > 0:
-                raise Exception('[ERROR] All files were filtered out!')
+                raise Exception('[SNAPSHOT] All files were filtered out!')
             else:
-                raise Exception(f'[ERROR] "{folder}"-folder is empty. Maybe you want to exclude this file by putting "__" in the foldername.')
+                raise Exception(f'[SNAPSHOT] "{folder}"-folder is empty. Maybe you want to exclude this file by putting "__" in the foldername. (no snapshot has been made)')
         last_file = sorted(filtered)[-1]
         with open(last_file, 'r') as f:
             content = f.read()
@@ -44,7 +46,7 @@ def create_snaptshot(max_date:str = None):
     
     snapshot += '}'
     
-    with open('../snapshot.json', 'w') as f:
+    with open('../__snapshot__.json', 'w') as f:
         f.write(snapshot)
 
 

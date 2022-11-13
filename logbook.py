@@ -74,11 +74,13 @@ def main():
     # print(segment)
     # print(metafiles)
   metafiles = glob.glob(current_path + '/../datafiles/*.meta')
-  for current_filename in metafiles:
+  pdf.add_page()
+  for i, current_filename in enumerate(metafiles):
     print(f'reading {current_filename}')
     with open(current_filename, 'r') as f:
-      pdf.add_page()
       render_metafile(pdf, f.read())
+      if i != len(metafiles) -1:
+        pdf.add_page()
 
 
   # output pdf file

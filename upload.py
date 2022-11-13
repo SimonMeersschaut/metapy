@@ -29,14 +29,11 @@ def file_already_uploaded(json_data:dict) -> (bool, str):
   '''
   # Check for meta files
   for filename in glob.glob('datafiles/*.meta'):
-    checking_file_date = filename.split('.meta')[0].split('datafiles/')[-1]
-    # with open(filename, 'r') as f:
-    #   content = f.read()
-    #   data = json.loads(converter.meta_to_json(content))
+    checking_file_date = filename.split('.meta')[0].split('datafiles\\')[-1]
     # now, we don't need to check the content of the files, as the time is also written in the filename
     try:
-      print(checking_file_date, json_data['Date']+'_'+json_data['Time'])
-      if checking_file_date == json_data['Date']+'_'+json_data['Time']:
+      print(checking_file_date, json_data['Date']+'_'+json_data['Time'].replace(':', '.'))
+      if checking_file_date == json_data['Date']+'_'+json_data['Time'].replace(':', '.'):
         return (True, filename) # file already uploaded
     except KeyError:
       print('No date in previously uploaded meta file')
@@ -48,7 +45,7 @@ def generate_filename(date:str, time:str) -> str:
   Generates a filename for a new meta file.
   -> format: the date (Year.Month.day) + a letter (to avoid duplicate filenames)
   '''
-  return f'{date}_{time}.meta'
+  return f'{date}_{time.replace(":", ".")}.meta'
 
 if __name__ == '__main__':
   # Upload file
