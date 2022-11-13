@@ -41,7 +41,8 @@ Run this script with a meta file as an argument, and it will convert it into a J
 ## Upload.py
 A script that will first check a few requirements, and then upload the data to a datafiles-directory.
 Logical Flow:
-![image](https://user-images.githubusercontent.com/88823772/201515901-c9c8bc42-fa30-4bf6-ad48-46774bd4011a.png)
+![image](https://user-images.githubusercontent.com/88823772/201516014-c7d98cbb-a5fc-426f-8e30-6686be06d078.png)
+
 
 ## The meta format
 
