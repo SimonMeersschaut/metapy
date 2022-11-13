@@ -212,15 +212,19 @@ def save():
       pass # skip empty lines
   
   # print(data)
-  success, message = upload.upload_meta(
-    # the upload function requires metadata, so we first need to convert the JSON data
-    converter.json_to_meta(
-      data,
-      template=template_format # the template argument is used to keep the right format
-      ),
-      allowed_keywords_filename=ALLOWEDKEYWORDS
-  )
-
+  try:
+    success, message = upload.upload_meta(
+      # the upload function requires metadata, so we first need to convert the JSON data
+      converter.json_to_meta(
+        data,
+        template=template_format # the template argument is used to keep the right format
+        ),
+        allowed_keywords_filename=ALLOWEDKEYWORDS
+    )
+  except Exception as e:
+    messagebox.showwarning(title='Uploading file', message=e.__repr__())
+    raise e
+  print('success, message')
   if success:
     messagebox.showinfo(title='Uploading file', message=message)
     
@@ -342,13 +346,14 @@ if __name__ == '__main__':
     window.mainloop()
     import ctypes
     ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 1 )
-    # exit()
+    exit()
   except Exception as e:
     import ctypes
     ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 1 )
     print('[ERROR]: Unexpected error:')
     print('[ERROR]: '+str(e))
     input('[ERROR]: Press <ENTER> to continue')
+    exit()
     
   
     

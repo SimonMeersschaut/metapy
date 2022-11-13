@@ -8,12 +8,12 @@ import datetime
 def create_snaptshot(max_date:str = None):
     if max_date == None:
         now = datetime.datetime.now()
-        max_date= now.strftime('%Y.%m.%d')
-        max_moment = datetime.datetime.strptime(max_date, '%Y.%m.%d') 
+        max_date= now.strftime('%Y.%m.%d_%H.%M')
+        max_moment = datetime.datetime.strptime(max_date, '%Y.%m.%d_%H.%M') 
         # used to make the <now> less accurate
         # -> so the files that have been written a few seconds ago also get included
     else:
-        max_moment = datetime.datetime.strptime(max_date, '%Y.%m.%d')
+        max_moment = datetime.datetime.strptime(max_date+'_23.59', '%Y.%m.%d_%H.%M')
     snapshot = '{'
 
     folders = glob.glob('../*')
@@ -28,10 +28,10 @@ def create_snaptshot(max_date:str = None):
                 if datetime.datetime.strptime(metafile.split('.meta')[0].split('datafiles\\')[-1][:-1], '%Y.%m.%d_%H.%M') <= max_moment:
                     filtered.append(metafile)
             except:
-                print(f'[ALERT] "{metafile}" does not match file format. This file will be skipped.')
+                raise Exception(f'[SNAPSHOT] "{metafile}" does not match file format (in folder "{folder}").')
         if len(filtered) == 0:
             if len(metafiles) > 0:
-                raise Exception('[SNAPSHOT] All files were filtered out!')
+                raise Exception(f'[SNAPSHOT] All files were filtered out (in folder "{folder}")!')
             else:
                 raise Exception(f'[SNAPSHOT] "{folder}"-folder is empty. Maybe you want to exclude this file by putting "__" in the foldername. (no snapshot has been made)')
         last_file = sorted(filtered)[-1]

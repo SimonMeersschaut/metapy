@@ -3,16 +3,15 @@ import json
 from datetime import datetime
 import string
 import sys
-import converter
+import metapy
 
-DELIMETER = '><'
-EMPTY_VALUE = '#'
+DELIMETER = '\t'
+EMPTY_VALUE = '/'
 
 def load_date(filename:str) -> datetime:
-  """Converts a filename eg. '2022.08.06_14:11.meta' to a datetime object."""
-  date:str = filename.split('.meta')[0].split('\\')[-1]
-  print(date)
-  return datetime.strptime(date, '%Y.%m.%d_%H.%M')
+  """Converts a filename eg. '2022.08.06a.json' to a datetime object."""
+  date:str = filename.split('.meta')[0].split('\\')[-1][:-1]
+  return datetime.strptime(date, '%Y.%m.%d')
 
 def filter_file(filename:str, content, filter_func_args) -> bool:
   """
@@ -52,7 +51,7 @@ def meta_files_to_csv(filenames, allowed_keys_file:str, filter_func:callable, fi
     with open(file_name, 'r') as f:
       #data = json.load(f)
       content = f.read()
-      data = json.loads(converter.meta_to_json(content)) # checking if a key is valid or not will be done later
+      data = json.loads(metapy.meta_to_json(content, check_keys=False)) # checking if a key is valid or not will be done later
       #print(data)
   
     if filter_file(file_name, data, filter_func_args):
@@ -68,8 +67,9 @@ def meta_files_to_csv(filenames, allowed_keys_file:str, filter_func:callable, fi
   # first load allowed keys
   with open(allowed_keys_file, 'r') as f:
     content = f.read()
-  allowed_keys = list(json.loads(converter.meta_to_json(
-    content
+  allowed_keys = list(json.loads(metapy.meta_to_json(
+    content,
+    check_keys=False
   )).keys())
   keys = keys + allowed_keys
 
@@ -80,32 +80,24 @@ def meta_files_to_csv(filenames, allowed_keys_file:str, filter_func:callable, fi
         keys.append(key)
   
   # create header
-  json_data = []
-  current_line = []
   csv:str = ''
   for i, key in enumerate(keys):
     csv += key
-    current_line.append(key)
     if i != len(keys) - 1:
       csv += DELIMETER
   csv += '\n'
-  json_data.append(current_line)
 
   # append the data of every line to the csv
   for file_name, file_content in zip(filenames, file_contents):
-    current_line = []
     for key_i, key in enumerate(keys):
       if key in file_content.keys(): # if this file has a value for that key
         csv += file_content[key]
-        current_line.append(file_content[key])
       else: # a default value for if the json file doesn't have a value for the key
         csv += EMPTY_VALUE
-        current_line.append(EMPTY_VALUE)
       if key_i != len(keys)-1:
         csv += DELIMETER
     csv += '\n'
-    json_data.append(current_line)
-  return (csv, json_data)
+  return csv
 
 if __name__ == '__main__':
   #load args
@@ -130,12 +122,9 @@ if __name__ == '__main__':
   # create csv data
   filenames = glob.glob('../datafiles/*.meta')
   #print(filenames)
-  csv, json_data = meta_files_to_csv(filenames, allowed_keys_file, filter_func=filter_file, filter_func_args=(start_date, end_date))
+  csv = meta_files_to_csv(filenames, allowed_keys_file, filter_func=filter_file, filter_func_args=(start_date, end_date))
 
   #write csv to output file
   with open('analysis.txt', 'w+') as f:
     f.write(csv)
-  with open('analysis.json', 'w+') as f:
-    json.dump(json_data, f)
-  print('[analysis completed] -> analysis.txt & analysis.json')
   #input('[ENTER] to exit')

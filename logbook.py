@@ -52,6 +52,13 @@ def main():
   args = parser.parse_args()
 
   segment = current_path.split("\\analysis")[0].split('\\')[-1]
+  ## check if pdf is accessible
+  try:
+    with open(f'logbook_{segment}.pdf', 'w') as f:
+      pass
+  except PermissionError:
+    raise PermissionError("Permission denied. Is the logbook opened by another program?")
+
 
   global current_filename
   # setup
@@ -84,10 +91,21 @@ def main():
 
 
   # output pdf file
-  
-  pdf.output(f'logbook_{segment}.pdf', 'F')
+  try:
+    pdf.output(f'logbook_{segment}.pdf', 'F')
+  except PermissionError:
+    raise PermissionError("Permission denied. Is the logbook opened by another program?")
+    
 
 
 if __name__ == '__main__':
-  main()
+  try:
+    main()
+    print('success')
+  except Exception as e:
+    print('ERORR:')
+    print(e)
+    input('[enter to quit]')
+
+    
 
