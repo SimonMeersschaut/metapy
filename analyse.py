@@ -9,8 +9,8 @@ DELIMETER = '\t'
 EMPTY_VALUE = '/'
 
 def load_date(filename:str) -> datetime:
-  """Converts a filename eg. '2022.08.06a.json' to a datetime object."""
-  date:str = filename.split('.meta')[0].split('\\')[-1][:-1]
+  """Converts a filename eg. '2022.08.06_14:11.meta' to a datetime object."""
+  date:str = filename.split('.meta')[0].split('\\')[-1]
   return datetime.strptime(date, '%Y.%m.%d_%H.%M')
 
 def filter_file(filename:str, content, filter_func_args) -> bool:
@@ -110,11 +110,11 @@ if __name__ == '__main__':
   else:
     print('not enough arguments')
   try:
-    start_date = datetime.strptime(start_date, '%Y.%m.%d_%H.%M')
+    start_date = datetime.strptime(start_date, '%Y.%m.%d')
   except IndexError:
     start_date = None
   try:
-    end_date = datetime.strptime(end_date, '%Y.%m.%d_%H.%M')
+    end_date = datetime.strptime(end_date, '%Y.%m.%d')
   except IndexError:
     end_date = datetime.now()
 
