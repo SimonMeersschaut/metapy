@@ -40,8 +40,8 @@ Run this script with a meta file as an argument, and it will convert it into a J
 
 ## Upload.py
 A script that will first check a few requirements, and then upload the data to a datafiles-directory.
-The requirements are:
- * The data may not already be uploaded in the directory.
+Logical Flow:
+![image](https://user-images.githubusercontent.com/88823772/201515901-c9c8bc42-fa30-4bf6-ad48-46774bd4011a.png)
 
 ## The meta format
 
