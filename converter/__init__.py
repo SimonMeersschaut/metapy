@@ -99,11 +99,7 @@ def json_to_meta(json_data:str, template:list = None) -> str:
 def load_format(meta_format:str) -> list:
   '''
     - (key, value)
-    - WaitForStar = auto()
-    - WaitForFirstLetterOfKey = auto()
-    - SavingKey = auto()
-    - WaitForFirstLetterOfValue = auto()
-    - SavingValue = auto()
+    - decoder.EmptyLine
   '''
   format_ = []
   for line in meta_format.split('\n'):

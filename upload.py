@@ -5,59 +5,50 @@ from datetime import datetime
 import string
 import os
 import sys
+import snapshot
 
 def upload_meta(metadata:str):
   # First convert it to a dictionary to perform a check
   json_data = json.loads(converter.meta_to_json(metadata))
   if file_already_uploaded(json_data)[0]:
+    # file already uploaded
     return (False, 'This file is already used in: '+file_already_uploaded(json_data)[1])
     # input('Press [enter] to exit')
     # exit()
   else:
-    # UPLOAD
-    with open(f'datafiles/{generate_filename()}', 'w+') as f:
+    # file not yet uploaded
+    # => UPLOAD
+    with open(f"datafiles/{generate_filename(json_data['Date'], json_data['Time'])}", 'w+') as f:
       f.write(metadata)
+    snapshot.create_snaptshot()
     return (True, 'successfully uploaded the file')
 
 def file_already_uploaded(json_data:dict) -> (bool, str):
   '''
   Check in all uploaded files if the same date is entered (date & time).
   '''
-  # check for all json files
-  for filename in glob.glob('datafiles/*.json'):
-    with open(filename, 'r') as f:
-      data = json.load(f)
-    try:
-      if data['Date'] == json_data['Date'] and data['Time'] == json_data['Time']:
-        return (True, filename)
-    except KeyError:
-      print('No date in previously uploaded meta file')
-  
-  # Now check for meta files
+  # Check for meta files
   for filename in glob.glob('datafiles/*.meta'):
-    with open(filename, 'r') as f:
-      content = f.read()
-      data = json.loads(converter.meta_to_json(content))
+    checking_file_date = filename.split('.meta')[0].split('datafiles/')[-1]
+    # with open(filename, 'r') as f:
+    #   content = f.read()
+    #   data = json.loads(converter.meta_to_json(content))
+    # now, we don't need to check the content of the files, as the time is also written in the filename
     try:
-      if data['Date'] == json_data['Date'] and data['Time'] == json_data['Time']:
-        return (True, filename)
+      print(checking_file_date, json_data['Date']+'_'+json_data['Time'])
+      if checking_file_date == json_data['Date']+'_'+json_data['Time']:
+        return (True, filename) # file already uploaded
     except KeyError:
       print('No date in previously uploaded meta file')
   
   return (False, None)
 
-def generate_filename() -> str:
+def generate_filename(date:str, time:str) -> str:
   '''
   Generates a filename for a new meta file.
   -> format: the date (Year.Month.day) + a letter (to avoid duplicate filenames)
   '''
-  now = datetime.now()
-  filename = ''
-  i = 0
-  while filename == '' or os.path.exists('datafiles/'+filename):
-    filename = f'{now.strftime("%Y.%m.%d")}{string.ascii_lowercase[i]}.meta'
-    i += 1
-  return filename
+  return f'{date}_{time}.meta'
 
 if __name__ == '__main__':
   # Upload file

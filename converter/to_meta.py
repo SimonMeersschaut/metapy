@@ -15,12 +15,12 @@ def json_to_meta(json_data:dict, template:list = None):
     # NOTE: the indent is required as it will return the dict in the right fomat
     json_data = json.dumps(json_data, indent=9999)
 
-  print(json_data)
+  # print(json_data)
   data_lines = []
   for line in json_data.split('\n'):
     data_lines.append(json_line_to_meta_line(line))
   
-  print(data_lines)
+  # print(data_lines)
 
   # calculate max length (to optimize the spaces in the table)
   max_key_length = max([len(data_line[0]) for data_line in data_lines if data_line != None and data_line != decoder.EmptyLine])  

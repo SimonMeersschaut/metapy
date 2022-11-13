@@ -39,9 +39,12 @@ This script will go in each directory (excluding those with '__' in their name) 
 Run this script with a meta file as an argument, and it will convert it into a JSON file (using the Converter library).
 
 ## Upload.py
-A script that will first check a few requirements, and then upload the data to a datafiles-directory.
-The requirements are:
- * The data may not already be uploaded in the directory.
+A script that will first check a few requirements, and then upload the data to a datafiles-directory. ( see logical flow char below )
+
+## Uploading a file
+Logical Flow:
+![image](https://user-images.githubusercontent.com/88823772/201517008-de7c519a-7908-4402-b023-3e9348ee05cc.png)
+
 
 ## The meta format
 
