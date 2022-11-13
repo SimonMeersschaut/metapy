@@ -43,7 +43,7 @@ A script that will first check a few requirements, and then upload the data to a
 
 ## Uploading a file
 Logical Flow:
-![image](https://user-images.githubusercontent.com/88823772/201517008-de7c519a-7908-4402-b023-3e9348ee05cc.png)
+![image](https://user-images.githubusercontent.com/88823772/201517887-322fef30-2311-417d-83b4-b50f25b974a6.png)
 
 
 ## The meta format
