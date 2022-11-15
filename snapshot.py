@@ -7,13 +7,16 @@ import datetime
 
 def create_snaptshot(max_date:str = None):
     if max_date == None:
+        # No date given
+        # => make now
         now = datetime.datetime.now()
         max_date= now.strftime('%Y.%m.%d_%H.%M')
         max_moment = datetime.datetime.strptime(max_date, '%Y.%m.%d_%H.%M') 
-        # used to make the <now> less accurate
-        # -> so the files that have been written a few seconds ago also get included
     else:
-        max_moment = datetime.datetime.strptime(max_date+'_23.59', '%Y.%m.%d_%H.%M')
+        # date given
+        # => read date
+        max_moment = datetime.datetime.strptime(max_date, '%Y.%m.%d_%H.%M')
+
     snapshot = '{'
 
     folders = glob.glob('../*')
