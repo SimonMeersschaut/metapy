@@ -55,7 +55,7 @@ def create_snaptshot(max_date:str = None):
 
 def main():
     parser = argparse.ArgumentParser(description='Create a snapshot of all machines (take the last log-file and combine them into a json file).')
-    parser.add_argument('-d', '--date', type=str, help="the moment of the status (take the file that was last uploaded at this moment). format: 'YYYY.MM.DD'", default=None, action='store')
+    parser.add_argument('date', type=str, help="the moment of the status (take the file that was last uploaded at this moment). format: 'YYYY.MM.DD'", action='store')
     args = parser.parse_args()
 
     if args.date: # is given
