@@ -36,30 +36,36 @@ class Entry:
     except KeyError:
       rowspan = 1
     
-
+    self.update_me = lambda: self.run_button_action(button_data['on_click'])
     button = tkinter.Button(
       window,
       text=button_data['text'],
-      command= lambda: self.run_button_action(button_data['on_click'])
+      command = self.update_me
     )
     button.grid(row=row, column=2, sticky=tkinter.N+tkinter.S, rowspan=rowspan)
   
   def run_button_action(self, action):
     if type(action) == callable: 
       #function
-      ...
+      self.set_value(action())
+      return self
     elif type(action) == dict:
+      updated_entries = []
       try:
         self.set_value(action['self']())
+        updated_entries.append(self)
       except KeyError:
         pass
       
       for key, value in action.items():
         try:
-          get_entry(key).set_value(value())
+          entry = get_entry(key)
+          entry.set_value(value())
+          updated_entries.append(entry)
         except AttributeError:
           if key != 'self':
             raise RuntimeError(f"'{key}' could not be found.")
+      return updated_entries
         
 
 
@@ -84,14 +90,15 @@ class TextEntry(Entry):
   def check_format(cls, value:str) -> bool:
     return True
   
-  def __init__(self, window, name, row, button={}):
+  def __init__(self, window, name, row, button={}, min_length=0):
     super().__init__(window, name, row)
     label = tkinter.Label(window, text=name)
     label.grid(row=row, column=0, sticky="W")
 
+    self.min_length = min_length
     self.entry = tkinter.Entry(window, width=70)
     self.entry.grid(row=row, column=1, sticky='W')
-    self.entry.bind('<FocusOut>', self.focus_out)
+    self.entry.bind('<FocusOut>', self.check_input)
     if button != {}:
       self.create_button(window, button)
   
@@ -101,9 +108,9 @@ class TextEntry(Entry):
   # def validate_input(self):
   #   return True
   
-  def focus_out(self, event):
-    # print(self.validate_input())
-    # print(type(self))
+  def check_input(self, *args):
+    # *args: event argument
+
     if not(self.validate_input()):
       self.entry.config(highlightbackground='red')
       self.entry.config(highlightthickness=2)
@@ -114,6 +121,12 @@ class TextEntry(Entry):
   def set_value(self, value):
     self.entry.delete(0,tkinter.END)
     self.entry.insert(0,value)
+    self.check_input()
+
+class ActivityEntry(TextEntry):
+  @classmethod
+  def check_format(cls, value) -> bool:
+    return len(value) >= 7
 
 class DateEntry(TextEntry):
   def __init__(self, window, name, row, button={}):
@@ -168,7 +181,10 @@ class FloatEntry(TextEntry):
       _ = float(value)
       return True
     except ValueError:
-      return False
+      if value == '':
+        return True
+      else:
+        return False
   
   # def validate_input(self):
   #   try:
@@ -183,7 +199,7 @@ class BooleanEntry(TextEntry):
   
   @classmethod
   def check_format(cls, value:str) -> bool:
-    if value.lower() in ['true', 'false']:
+    if value.lower() in ['true', 'false', '']:
       return True
     else:
       return False
@@ -207,6 +223,18 @@ def search_entry(name) -> object:
     if entry.name == name:
       return entry
   return None #()
+
+def update_all():
+  updated_entries = []
+  for entry in entries:
+    try:
+      updated_entries += entry.update_me()
+    except AttributeError:
+      pass
+  
+  for entry in updated_entries:
+    entry.entry.config(highlightbackground='green')
+    entry.entry.config(highlightthickness=2)
 
 def save():
   # check all entries
@@ -262,6 +290,8 @@ def save():
     messagebox.showwarning(title='Error while uploading metadata', message=message+'\nThe data is not saved.')
   
 def create_entry(key, value, row) -> Entry:
+  if key == 'Activity':
+    return ActivityEntry(second_frame, key, row)
   for entry_type in ENTRY_TYPES:
     if entry_type.check_format(value):
       # create the entry
@@ -326,9 +356,9 @@ if __name__ == '__main__':
     # Create the tkinter window
     window = tkinter.Tk()
     window.option_add( "*font", "lucida 12" )
-    # window.maxsize(width=700, height=800)
-    window.minsize(width=550, height=500)
-    window.geometry('1000x800')
+    window.maxsize(width=935, height=10**6)
+    window.minsize(width=935, height=500)
+    window.geometry('935x800')
     
     window.title('Form')
     # window.maxsize(500, 500)
@@ -364,12 +394,18 @@ if __name__ == '__main__':
         HorizantalSeperator(second_frame, row)
       row += 1
 
-
+    # Action bar
+    # update all
+    row += 1
+    button = tkinter.Button(window, text='Update all', width=8, command=update_all)
+    button.pack()
+    # save
     row += 1
     button = tkinter.Button(window, text='save', width=8, command=save)
     button.pack()
 
     window.mainloop()
+    print()
     import ctypes
     ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 1 )
     exit()
@@ -377,7 +413,7 @@ if __name__ == '__main__':
     import ctypes
     ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 1 )
     print('[ERROR]: Unexpected error:')
-    print('[ERROR]: '+e.__repr_())
+    print('[ERROR]: '+e.__repr__())
     input('[ERROR]: Press <ENTER> to continue')
     exit()
     
