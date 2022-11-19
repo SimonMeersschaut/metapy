@@ -1,8 +1,8 @@
 from datetime import datetime
 
 ENTRY_BUTTONS = {
-  'Date':{'text':'now', 'on_click':lambda: datetime.now().strftime('%Y.%m.%d')},
-  'Time':{'text':'now', 'on_click':lambda: datetime.now().strftime('%H:%M')},
+  'Date':{'text':'now', 'on_click':{'self':lambda: datetime.now().strftime('%Y.%m.%d'), 'Time':lambda: datetime.now().strftime('%H:%M')}, 'rowspan':2},
+  # 'Time':{'text':'now', 'on_click':},
   'SF6_pressure[bar]':{'text':'fetch', 'on_click':lambda: fetch('https://mill.capitan.imec.be/api/any/motrona_sf6')['counter_0_value']},
   'SF6_temperature[C]': {'text':'fetch', 'on_click':lambda: fetch('https://mill.capitan.imec.be/api/any/motrona_sf6')['counter_1_value']}
 }

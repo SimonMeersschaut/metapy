@@ -13,20 +13,55 @@ row = 0
 
 # TODO fix validate input passing!
 
+entries = []
+def get_entry(name):
+  for entry in entries:
+    try:
+      if entry.name == name:
+        return entry
+    except AttributeError:
+      # Horizontal Seperator
+      pass
 
 class Entry:
-  def __init__(self, window, name):
+  def __init__(self, window, name, row):
     self.name = name
     # if button != {}:
       # self.create_button(window=window, button_data=button)
   
   def create_button(self, window, button_data:dict):
+    try:
+      print(button_data)
+      rowspan = button_data['rowspan']
+    except KeyError:
+      rowspan = 1
+    
+
     button = tkinter.Button(
       window,
       text=button_data['text'],
-      command=lambda: self.set_value(button_data['on_click']())
-      )
-    button.grid(row=row, column=2, sticky='E')
+      command= lambda: self.run_button_action(button_data['on_click'])
+    )
+    button.grid(row=row, column=2, sticky=tkinter.N+tkinter.S, rowspan=rowspan)
+  
+  def run_button_action(self, action):
+    if type(action) == callable: 
+      #function
+      ...
+    elif type(action) == dict:
+      try:
+        self.set_value(action['self']())
+      except KeyError:
+        pass
+      
+      for key, value in action.items():
+        try:
+          get_entry(key).set_value(value())
+        except AttributeError:
+          if key != 'self':
+            raise RuntimeError(f"'{key}' could not be found.")
+        
+
 
   def get_value(self):
     try:
@@ -40,22 +75,17 @@ class Entry:
       pass
   
   def validate_input(self) -> bool:
+    # pass function to base class
     return type(self).check_format(self.get_value())
   
-  # def set_value(self, value):
-  #   try:
-  #     return self.current_value.set(value)
-  #   except AttributeError:
-  #     self.entry.set('')
-      
+
 class TextEntry(Entry):
   @classmethod
   def check_format(cls, value:str) -> bool:
     return True
   
-  def __init__(self, window, name, button={}):
-    super().__init__(window, name)
-    global row
+  def __init__(self, window, name, row, button={}):
+    super().__init__(window, name, row)
     label = tkinter.Label(window, text=name)
     label.grid(row=row, column=0, sticky="W")
 
@@ -86,8 +116,8 @@ class TextEntry(Entry):
     self.entry.insert(0,value)
 
 class DateEntry(TextEntry):
-  def __init__(self, window, name, button={}):
-    super().__init__(window, name, button=button)
+  def __init__(self, window, name, row, button={}):
+    super().__init__(window, name, row, button=button)
     # now = tkinter.Button(window, text='now', command=self.set_to_now)
     # now.grid(row=row, column=1, sticky='E')
   
@@ -107,8 +137,8 @@ class DateEntry(TextEntry):
   #     return False
     
 class TimeEntry(TextEntry):
-  def __init__(self, window, name, button={}):
-    super().__init__(window, name, button=button)
+  def __init__(self, window, name, row, button={}):
+    super().__init__(window, name, row, button=button)
     # now = tkinter.Button(window, text='now', command=self.set_to_now)
     # now.grid(row=row, column=1, sticky='E')
   
@@ -129,8 +159,8 @@ class TimeEntry(TextEntry):
 
 
 class FloatEntry(TextEntry):
-  def __init__(self, window, name, button={}):
-    super().__init__(window, name, button)
+  def __init__(self, window, name, row, button={}):
+    super().__init__(window, name, row, button)
   
   @classmethod
   def check_format(cls, value:str) -> bool:
@@ -148,8 +178,8 @@ class FloatEntry(TextEntry):
   #     return False
   
 class BooleanEntry(TextEntry):
-  def __init__(self, window, name, button={}):
-    super().__init__(window, name, button)
+  def __init__(self, window, name, row, button={}):
+    super().__init__(window, name, row, button)
   
   @classmethod
   def check_format(cls, value:str) -> bool:
@@ -163,8 +193,7 @@ class BooleanEntry(TextEntry):
 
 
 class HorizantalSeperator:
-  def __init__(self, window):
-    global row
+  def __init__(self, window, row):
     row += 1
     self.separator2 = tkinter.Frame(window, bd=10, relief='sunken', height=10)
     self.separator2.grid(row=row, column=1)
@@ -232,15 +261,15 @@ def save():
   else:
     messagebox.showwarning(title='Error while uploading metadata', message=message+'\nThe data is not saved.')
   
-def create_entry(key, value) -> Entry:
+def create_entry(key, value, row) -> Entry:
   for entry_type in ENTRY_TYPES:
     if entry_type.check_format(value):
       # create the entry
       # check if there is a button registered for this entry
       if key in list(ENTRY_BUTTONS.keys()):
-        return entry_type(second_frame, key, button=ENTRY_BUTTONS[key])
+        return entry_type(second_frame, key, row, button=ENTRY_BUTTONS[key])
       else:
-        return entry_type(second_frame, key)
+        return entry_type(second_frame, key, row)
 
 def check_keywords(template_format, keywords_filename:str) -> bool:
   """Check if all keys in the template_format are alos in the keywords_file."""
@@ -272,7 +301,6 @@ if __name__ == '__main__':
   import ctypes
   ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 0 )
   try:
-
     try:
       ALLOWEDKEYWORDS = sys.argv[1]
       TEMPLATE_FILE = sys.argv[2]
@@ -327,15 +355,13 @@ if __name__ == '__main__':
       if type(template_item) == tuple:
         key, value = template_item
         # find type of value
-        entry = create_entry(key, value)
+        entry = create_entry(key, value, row)
 
         entry.set_value(value) # set the entry value to the one on the template file
         entries.append(entry)
 
       elif template_item == converter.decoder.EmptyLine:
-        entries.append(
-          HorizantalSeperator(second_frame)
-        )
+        HorizantalSeperator(second_frame, row)
       row += 1
 
 
@@ -351,7 +377,7 @@ if __name__ == '__main__':
     import ctypes
     ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 1 )
     print('[ERROR]: Unexpected error:')
-    print('[ERROR]: '+str(e))
+    print('[ERROR]: '+e.__repr_())
     input('[ERROR]: Press <ENTER> to continue')
     exit()
     
