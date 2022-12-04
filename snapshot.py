@@ -6,15 +6,16 @@ import argparse
 import datetime
 
 def create_snaptshot(max_date:str = None):
+    now = datetime.datetime.now()
     if max_date == None:
-        now = datetime.datetime.now()
-        max_date= now.strftime('%Y.%m.%d_%H.%M')
+        max_date = now.strftime('%Y.%m.%d_%H.%M')
         max_moment = datetime.datetime.strptime(max_date, '%Y.%m.%d_%H.%M') 
-        # used to make the <now> less accurate
-        # -> so the files that have been written a few seconds ago also get included
     else:
         max_moment = datetime.datetime.strptime(max_date+'_23.59', '%Y.%m.%d_%H.%M')
-    snapshot = '{'
+    snapshot = {}
+    # add config data
+    snapshot.update({"Created": {"Date": now.strftime('%Y.%m.%d'), "Time": now.strftime('%H:%M')}, "daybook_data":{}})
+    
 
     folders = glob.glob('../*')
     folders = [folder for folder in folders if not('__' in folder) and os.path.isdir(folder)]
@@ -37,17 +38,14 @@ def create_snaptshot(max_date:str = None):
         last_file = sorted(filtered)[-1]
         with open(last_file, 'r') as f:
             content = f.read()
-            json_data = converter.meta_to_json(content)
+            json_data = json.loads(converter.meta_to_json(content))
             #print(json_data)
-        if i != 0:
-            snapshot += ', '
-        snapshot += f'"' + folder.split('meta\\')[-1] + f'": {json_data}'
-        #snapshot.update({folder.split('meta\\')[-1]:json_data})
-    
-    snapshot += '}'
+        # if i != 0:
+        #     snapshot += ', '
+        snapshot["daybook_data"].update({folder.split('meta\\')[-1].split("..\\")[-1]: json_data})
     
     with open('../__snapshot__.json', 'w') as f:
-        f.write(snapshot)
+        f.write(json.dumps(snapshot, indent=4))
 
 
 def main():
