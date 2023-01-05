@@ -335,7 +335,7 @@ if __name__ == '__main__':
       ALLOWEDKEYWORDS = sys.argv[1]
       TEMPLATE_FILE = sys.argv[2]
     except IndexError:
-      raise Exception('No allowedkeywords and/or template file given.')
+      raise Exception('Please provide a allowedkeywords file and a template file.')
     # Load template file
     try:
       with open(TEMPLATE_FILE, 'r') as f:
