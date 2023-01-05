@@ -7,17 +7,13 @@ import datetime
 import toml
 
 def create_snaptshot(max_date:str = None):
+    now = datetime.datetime.now()
     if max_date == None:
-        # No date given
-        # => make now
         now = datetime.datetime.now()
         max_date= now.strftime('%Y.%m.%d_%H.%M')
         max_moment = datetime.datetime.strptime(max_date, '%Y.%m.%d_%H.%M') 
     else:
-        # date given
-        # => read date
-        max_moment = datetime.datetime.strptime(max_date, '%Y.%m.%d_%H.%M')
-
+        max_moment = datetime.datetime.strptime(max_date+'_23.59', '%Y.%m.%d_%H.%M')
     snapshot = '{'
 
     folders = glob.glob('../*')
@@ -41,25 +37,22 @@ def create_snaptshot(max_date:str = None):
         last_file = sorted(filtered)[-1]
         with open(last_file, 'r') as f:
             content = f.read()
-            json_data = converter.meta_to_json(content)
+            json_data = json.loads(converter.meta_to_json(content))
             #print(json_data)
-        if i != 0:
-            snapshot += ', '
-        snapshot += f'"' + folder.split('meta\\')[-1] + f'": {json_data}'
-        #snapshot.update({folder.split('meta\\')[-1]:json_data})
-    
-    snapshot += '}'
+        # if i != 0:
+        #     snapshot += ', '
+        snapshot["daybook_data"].update({folder.split('meta\\')[-1].split("..\\")[-1]: json_data})
     
     with open('../__snapshot__.json', 'w') as f:
         f.write(snapshot)
     
+        
     # generate TOML file
     data = json.loads(snapshot)
     toml_string = toml.dumps(data)
     
     with open('../__snapshot__.json', 'w+') as f:
         f.write(toml_string)
-
 
 
 def main():

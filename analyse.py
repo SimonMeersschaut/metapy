@@ -5,8 +5,8 @@ import string
 import sys
 import converter
 
-DELIMETER = '><'
-EMPTY_VALUE = '#'
+DELIMETER = '\t'
+EMPTY_VALUE = 'no-value'
 
 def load_date(filename:str) -> datetime:
   """Converts a filename eg. '2022.08.06_14:11.meta' to a datetime object."""
