@@ -4,6 +4,7 @@ import os
 import json
 import argparse
 import datetime
+import toml
 
 def create_snaptshot(max_date:str = None):
     if max_date == None:
@@ -51,6 +52,14 @@ def create_snaptshot(max_date:str = None):
     
     with open('../__snapshot__.json', 'w') as f:
         f.write(snapshot)
+    
+    # generate TOML file
+    data = json.loads(snapshot)
+    toml_string = toml.dumps(data)
+    
+    with open('../__snapshot__.json', 'w+') as f:
+        f.write(toml_string)
+
 
 
 def main():
