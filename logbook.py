@@ -49,7 +49,7 @@ def render_metafiles(metafiles:list, outputfile:str, frontpage:bool=True, title=
 
   # render files
   pdf.set_font('Courier', '', 15)
-  pdf.set_margins(10, 0, 10)
+  pdf.set_margins(20, 0, 10)
   pdf.add_page()
   for i, current_filename in enumerate(metafiles):
     print(f'reading {current_filename}')
