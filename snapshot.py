@@ -15,7 +15,8 @@ def create_snaptshot(max_date:str = None):
         max_moment = datetime.datetime.strptime(max_date+'_23.59', '%Y.%m.%d_%H.%M')
     snapshot = {}
     # add config data
-    snapshot.update({"Created": {"Date": now.strftime('%Y.%m.%d'), "Time": now.strftime('%H:%M')}, "daybook_data":{}})
+    #snapshot.update({"Created": {"Date": now.strftime('%Y.%m.%d'), "Time": now.strftime('%H:%M')}, "daybook_data":{}})
+    snapshot.update({"Created": {"Date": now.strftime('%Y.%m.%d'), "Time": now.strftime('%H:%M')}})
     
 
     folders = glob.glob('../*')
@@ -43,7 +44,8 @@ def create_snaptshot(max_date:str = None):
             #print(json_data)
         # if i != 0:
         #     snapshot += ', '
-        snapshot["daybook_data"].update({folder.split('meta\\')[-1].split("..\\")[-1]: json_data})
+        #snapshot["daybook_data"].update({folder.split('meta\\')[-1].split("..\\")[-1]: json_data})
+        snapshot.update({folder.split('meta\\')[-1].split("..\\")[-1]: json_data})
     
     with open('../__snapshot__.json', 'w+') as f:
         f.write(json.dumps(snapshot))
